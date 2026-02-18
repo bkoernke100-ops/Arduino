@@ -24,20 +24,39 @@
   https://docs.arduino.cc/built-in-examples/basics/Blink/
 */
 
+// Define the speaker pin
+const int speakerPin = 6;   // Piezo connected to pin 6
+
 // the setup function runs once when you press reset or power the board
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(10, OUTPUT);
-  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);   // LED 1
+  pinMode(9, OUTPUT);    // LED 2
+  pinMode(speakerPin, OUTPUT); // Speaker output
 }
 
 // the loop function runs over and over again forever
 void loop() {
-  digitalWrite(9, HIGH);  // turn the LED on (HIGH is the voltage level)
-  digitalWrite(10, LOW);   // turn the LED off by making the voltage LOW
-  delay(500);                      // wait for a 2 second
 
-digitalWrite(10, HIGH);  // turn the LED on (HIGH is the voltage level)
-  digitalWrite(9, LOW);   // turn the LED off by making the voltage LOW
-  delay(500);                      // wait for a 2 second
+  // ---- Rising Siren + LED flash ----
+  for (int frequency = 600; frequency <= 1800; frequency += 20) {
+    
+    tone(speakerPin, frequency);  // Play current siren frequency
+
+    digitalWrite(9, HIGH);   // LED 1 ON
+    digitalWrite(10, LOW);   // LED 2 OFF
+    
+    delay(10);               // Small delay for smooth siren sound
+  }
+
+  // ---- Falling Siren + LED swap ----
+  for (int frequency = 1800; frequency >= 600; frequency -= 20) {
+    
+    tone(speakerPin, frequency);  // Play current siren frequency
+
+    digitalWrite(9, LOW);    // LED 1 OFF
+    digitalWrite(10, HIGH);  // LED 2 ON
+    
+    delay(10);               // Small delay for smooth siren sound
+  }
+
 }

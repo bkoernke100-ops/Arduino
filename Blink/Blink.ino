@@ -24,17 +24,29 @@
   https://docs.arduino.cc/built-in-examples/basics/Blink/
 */
 
-// Define the speaker pin
-const int speakerPin = 6;   // Piezo connected to pin 6
+// -------------------------------
+// Pin Definitions
+// -------------------------------
+const int speakerPin = 6;   // Piezo speaker connected to pin 6
+const int fadeLedPin = 11;  // Fading LED connected to PWM pin 11
 
-// the setup function runs once when you press reset or power the board
+// Variables for fading LED
+int brightness = 0;         // Current brightness (0–255)
+int fadeAmount = 5;         // Amount to change brightness each step
+
+// -------------------------------
+// Setup runs once at startup
+// -------------------------------
 void setup() {
-  pinMode(10, OUTPUT);   // LED 1
-  pinMode(9, OUTPUT);    // LED 2
-  pinMode(speakerPin, OUTPUT); // Speaker output
+  pinMode(10, OUTPUT);        // LED 1
+  pinMode(9, OUTPUT);         // LED 2
+  pinMode(speakerPin, OUTPUT);// Speaker output
+  pinMode(fadeLedPin, OUTPUT);// Fading LED
 }
 
-// the loop function runs over and over again forever
+// -------------------------------
+// Main loop runs forever
+// -------------------------------
 void loop() {
 
   // ---- Rising Siren + LED flash ----
@@ -42,10 +54,19 @@ void loop() {
     
     tone(speakerPin, frequency);  // Play current siren frequency
 
-    digitalWrite(9, HIGH);   // LED 1 ON
-    digitalWrite(10, LOW);   // LED 2 OFF
-    
-    delay(10);               // Small delay for smooth siren sound
+    digitalWrite(9, HIGH);   // LED on pin 9 ON
+    digitalWrite(10, LOW);   // LED on pin 10 OFF
+
+    // Fade LED on pin 11
+    analogWrite(fadeLedPin, brightness); // Set brightness
+    brightness += fadeAmount;            // Increase brightness
+
+    // Reverse fade direction at limits
+    if (brightness <= 0 || brightness >= 255) {
+      fadeAmount = -fadeAmount;
+    }
+
+    delay(10); // Small delay for smooth siren sound
   }
 
   // ---- Falling Siren + LED swap ----
@@ -53,10 +74,19 @@ void loop() {
     
     tone(speakerPin, frequency);  // Play current siren frequency
 
-    digitalWrite(9, LOW);    // LED 1 OFF
-    digitalWrite(10, HIGH);  // LED 2 ON
-    
-    delay(10);               // Small delay for smooth siren sound
-  }
+    digitalWrite(9, LOW);    // LED on pin 9 OFF
+    digitalWrite(10, HIGH);  // LED on pin 10 ON
 
+    // Continue fading LED
+    analogWrite(fadeLedPin, brightness);
+    brightness += fadeAmount;
+
+    // Reverse fade direction at limits
+    if (brightness <= 0 || brightness >= 255) {
+      fadeAmount = -fadeAmount;
+    }
+
+    delay(10); // Small delay for smooth siren sound
+  }
 }
+
